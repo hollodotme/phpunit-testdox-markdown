@@ -15,25 +15,23 @@ final class MarkdownFile implements WritesMarkdownFile
 	/** @var string */
 	private $filePath;
 
-	/** @var array */
-	private $testStatusMap;
-
 	/** @var resource */
 	private $fileHandle;
 
-	public function __construct( string $filePath, array $testStatusMap )
+	public function __construct( string $filePath )
 	{
-		$this->filePath      = $filePath;
-		$this->testStatusMap = $testStatusMap;
+		$this->filePath = $filePath;
 	}
 
 	/**
+	 * @param array $legend
+	 *
 	 * @throws RuntimeException
 	 */
-	public function writeLegend() : void
+	public function writeLegend( array $legend ) : void
 	{
 		$legendStrings = [];
-		foreach ( $this->testStatusMap as $status => $output )
+		foreach ( $legend as $status => $output )
 		{
 			$legendStrings[] = "{$output} {$status}";
 		}

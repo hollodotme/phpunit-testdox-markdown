@@ -14,6 +14,7 @@ use PHPUnit\Framework\Warning;
 use PHPUnit\Runner\BaseTestRunner;
 use Throwable;
 use function array_filter;
+use function array_merge;
 use function class_exists;
 use function dirname;
 use function getcwd;
@@ -26,7 +27,7 @@ use const DIRECTORY_SEPARATOR;
 
 final class Markdown implements TestListener
 {
-	private const TEST_STATUS_MAP = [
+	private const TEST_STATUS_MAP_DEFAULT = [
 		'Passed'     => '💚',
 		'Error'      => '💔',
 		'Failure'    => '💔',
@@ -41,6 +42,9 @@ final class Markdown implements TestListener
 
 	/** @var string */
 	private $baseNamespace;
+
+	/** @var array */
+	private $testStatusMap;
 
 	/** @var WritesMarkdownFile */
 	private $markdownFile;
@@ -60,14 +64,15 @@ final class Markdown implements TestListener
 		string $environment,
 		string $filePath,
 		string $baseNamespace = '',
-		array $testStatusMap = self::TEST_STATUS_MAP
+		array $testStatusMap = self::TEST_STATUS_MAP_DEFAULT
 	)
 	{
 		$this->environment   = $environment;
 		$this->baseNamespace = rtrim( $baseNamespace, '\\' );
+		$this->testStatusMap = array_merge( self::TEST_STATUS_MAP_DEFAULT, $testStatusMap );
 
 		$this->requireOutputClassIfNecessary();
-		$this->markdownFile = new MarkdownFile( $this->getRealFilePath( $filePath ), $testStatusMap );
+		$this->markdownFile = new MarkdownFile( $this->getRealFilePath( $filePath ) );
 	}
 
 	private function requireOutputClassIfNecessary() : void
@@ -103,7 +108,7 @@ final class Markdown implements TestListener
 		$testNameWithDataSet = $this->getHumanReadableTestName( $test->getName() );
 		$testResultInfo      = $this->getTestResultInfo(
 			$testNameWithDataSet,
-			self::TEST_STATUS_MAP['Error'],
+			$this->testStatusMap['Error'],
 			$t->getMessage()
 		);
 
@@ -116,7 +121,7 @@ final class Markdown implements TestListener
 		$testNameWithDataSet = $this->getHumanReadableTestName( $test->getName() );
 		$testResultInfo      = $this->getTestResultInfo(
 			$testNameWithDataSet,
-			self::TEST_STATUS_MAP['Warning'],
+			$this->testStatusMap['Warning'],
 			$e->getMessage()
 		);
 
@@ -129,7 +134,7 @@ final class Markdown implements TestListener
 		$testNameWithDataSet = $this->getHumanReadableTestName( $test->getName() );
 		$testResultInfo      = $this->getTestResultInfo(
 			$testNameWithDataSet,
-			self::TEST_STATUS_MAP['Failure'],
+			$this->testStatusMap['Failure'],
 			$e->getMessage()
 		);
 
@@ -142,7 +147,7 @@ final class Markdown implements TestListener
 		$testNameWithDataSet = $this->getHumanReadableTestName( $test->getName() );
 		$testResultInfo      = $this->getTestResultInfo(
 			$testNameWithDataSet,
-			self::TEST_STATUS_MAP['Incomplete'],
+			$this->testStatusMap['Incomplete'],
 			$t->getMessage()
 		);
 
@@ -155,7 +160,7 @@ final class Markdown implements TestListener
 		$testNameWithDataSet = $this->getHumanReadableTestName( $test->getName() );
 		$testResultInfo      = $this->getTestResultInfo(
 			$testNameWithDataSet,
-			self::TEST_STATUS_MAP['Risky'],
+			$this->testStatusMap['Risky'],
 			$t->getMessage()
 		);
 
@@ -168,7 +173,7 @@ final class Markdown implements TestListener
 		$testNameWithDataSet = $this->getHumanReadableTestName( $test->getName() );
 		$testResultInfo      = $this->getTestResultInfo(
 			$testNameWithDataSet,
-			self::TEST_STATUS_MAP['Skipped'],
+			$this->testStatusMap['Skipped'],
 			$t->getMessage()
 		);
 
@@ -191,7 +196,7 @@ final class Markdown implements TestListener
 
 		if ( false === strpos( $suiteName, '\\' ) )
 		{
-			$this->markdownFile->writeLegend();
+			$this->markdownFile->writeLegend( $this->testStatusMap );
 			$this->markdownFile->writeHeadline(
 				sprintf( 'Test suite: %s', $suiteName ),
 				1
@@ -241,8 +246,8 @@ final class Markdown implements TestListener
 		{
 			$allPassed      = true;
 			$passingResults = [
-				self::TEST_STATUS_MAP['Passed'],
-				self::TEST_STATUS_MAP['Skipped'],
+				$this->testStatusMap['Passed'],
+				$this->testStatusMap['Skipped'],
 			];
 
 			$results  = [];
@@ -304,7 +309,10 @@ final class Markdown implements TestListener
 
 		/** @noinspection PhpUndefinedMethodInspection */
 		$testNameWithDataSet = $this->getHumanReadableTestName( $test->getName() );
-		$testResultInfo      = $this->getTestResultInfo( $testNameWithDataSet, self::TEST_STATUS_MAP['Passed'] );
+		$testResultInfo      = $this->getTestResultInfo(
+			$testNameWithDataSet,
+			$this->testStatusMap['Passed']
+		);
 
 		$this->testCases[ $testResultInfo['testName'] ][] = $testResultInfo;
 	}

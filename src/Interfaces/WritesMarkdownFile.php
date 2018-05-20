@@ -4,7 +4,7 @@ namespace hollodotme\PHPUnit\TestListeners\TestDox\Interfaces;
 
 interface WritesMarkdownFile
 {
-	public function writeLegend() : void;
+	public function writeLegend( array $legend ) : void;
 
 	public function writeHeadline( string $title, int $level ) : void;
 
