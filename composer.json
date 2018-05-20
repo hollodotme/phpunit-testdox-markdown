@@ -1,0 +1,49 @@
+{
+  "name": "hollodotme/phpunit-testdox-markdown",
+  "description": "A PHPUnit test listener that creates a testdox markdown file with grouped dataset output",
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Holger Woltersdorf",
+      "email": "hw@hollo.me"
+    }
+  ],
+  "require": {
+    "php": ">=7.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "hollodotme\\PHPUnit\\TestListeners\\TestDox\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "hollodotme\\PHPUnit\\TestListeners\\TestDox\\Tests\\": "tests/"
+    }
+  },
+  "require-dev": {
+    "tm/tooly-composer-script": "~1.2"
+  },
+  "scripts": {
+    "post-install-cmd": "Tooly\\ScriptHandler::installPharTools",
+    "post-update-cmd": "Tooly\\ScriptHandler::installPharTools"
+  },
+  "extra": {
+    "tools": {
+      "phpunit": {
+        "url": "https://phar.phpunit.de/phpunit-7.phar",
+        "only-dev": true
+      },
+      "coveralls": {
+        "url": "https://github.com/php-coveralls/php-coveralls/releases/download/v2.0.0/php-coveralls.phar",
+        "only-dev": true
+      },
+      "phpmetrics": {
+        "url": "https://github.com/phpmetrics/PhpMetrics/releases/download/v2.3.2/phpmetrics.phar",
+        "only-dev": true
+      }
+    }
+  }
+}
