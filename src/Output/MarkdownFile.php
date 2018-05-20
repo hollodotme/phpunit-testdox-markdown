@@ -61,7 +61,7 @@ final class MarkdownFile implements WritesMarkdownFile
 	{
 		if ( null === $this->fileHandle )
 		{
-			$this->fileHandle = fopen( $this->filePath, 'wb' );
+			$this->fileHandle = @fopen( $this->filePath, 'wb' );
 		}
 
 		if ( false === $this->fileHandle )
