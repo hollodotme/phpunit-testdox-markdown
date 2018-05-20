@@ -1,0 +1,4 @@
+- [ ] Checkbox 1
+- [x] Checkbox 2
+- [ ] Checkbox 3
+- [x] Checkbox 4
