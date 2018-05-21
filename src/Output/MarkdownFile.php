@@ -36,7 +36,7 @@ final class MarkdownFile implements WritesMarkdownFile
 			$legendStrings[] = "{$output} {$status}";
 		}
 
-		$this->writeToFile( "%s\n\n", implode( ' | ', $legendStrings ) );
+		$this->write( "%s\n\n", implode( ' | ', $legendStrings ) );
 	}
 
 	/**
@@ -45,7 +45,7 @@ final class MarkdownFile implements WritesMarkdownFile
 	 *
 	 * @throws RuntimeException
 	 */
-	private function writeToFile( string $formatOrContents, ...$contextValues ) : void
+	public function write( string $formatOrContents, ...$contextValues ) : void
 	{
 		fwrite(
 			$this->getFileHandle(),
@@ -80,7 +80,7 @@ final class MarkdownFile implements WritesMarkdownFile
 	 */
 	public function writeHeadline( string $title, int $level ) : void
 	{
-		$this->writeToFile( "%s %s\n\n", str_repeat( '#', $level ), $title );
+		$this->write( "%s %s\n\n", str_repeat( '#', $level ), $title );
 	}
 
 	/**
@@ -110,7 +110,7 @@ final class MarkdownFile implements WritesMarkdownFile
 
 		$indent = str_repeat( ' ', $indentLevel * 2 );
 
-		$this->writeToFile(
+		$this->write(
 			"%s%s %s\n\n",
 			$indent,
 			$lineChar,
@@ -137,7 +137,7 @@ final class MarkdownFile implements WritesMarkdownFile
 	 */
 	public function writeCheckbox( string $label, bool $ticked ) : void
 	{
-		$this->writeToFile(
+		$this->write(
 			"- [%s] %s\n",
 			$ticked ? 'x' : ' ',
 			$label
@@ -149,7 +149,7 @@ final class MarkdownFile implements WritesMarkdownFile
 	 */
 	public function writeHorizontalRule() : void
 	{
-		$this->writeToFile( "\n---\n\n" );
+		$this->write( "\n---\n\n" );
 	}
 
 	public function getFilePath() : string
