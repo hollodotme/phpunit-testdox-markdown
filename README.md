@@ -101,9 +101,6 @@ If you're not using PSR-4 autoloading, also add the class' file path to the `<li
 
 ## Example output
 
----
----
-
 💚 Passed | 💔 Error | 💔 Failure | 🧡 Warning | 💛 Risky | 💙 Incomplete | 💜 Skipped
 
 # Test suite: Unit-Test-Suite
@@ -136,8 +133,6 @@ If you're not using PSR-4 autoloading, also add the class' file path to the `<li
 
 Report created at 2018-05-21 22:23:12 (UTC)
 
----
----
 
 ## Contributing
 
