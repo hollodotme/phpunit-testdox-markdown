@@ -2,6 +2,7 @@
 
 namespace hollodotme\PHPUnit\TestListeners\TestDox;
 
+use DateTimeImmutable;
 use hollodotme\PHPUnit\TestListeners\TestDox\Exceptions\RuntimeException;
 use hollodotme\PHPUnit\TestListeners\TestDox\Interfaces\WritesMarkdownFile;
 use hollodotme\PHPUnit\TestListeners\TestDox\Output\MarkdownFile;
@@ -338,8 +339,19 @@ final class Markdown implements TestListener
 		];
 	}
 
+	/**
+	 * @throws RuntimeException
+	 * @throws \Exception
+	 */
 	public function __destruct()
 	{
+		$dateTime = new DateTimeImmutable();
+		$this->markdownFile->write(
+			'Report created at %s (%s)',
+			$dateTime->format( 'Y-m-d H:i:s' ),
+			$dateTime->getTimezone()->getName()
+		);
+
 		$filePath = $this->markdownFile->getFilePath();
 		$this->markdownFile->close();
 
