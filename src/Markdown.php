@@ -322,11 +322,19 @@ final class Markdown implements TestListener
 		$matches = [];
 		preg_match( '#^([^\#]+)(?: with data set \#(\d+))?$#', $testNameWithDataSet, $matches );
 
+		$dataSet = $matches[2] ?? null;
+
 		return [
 			'testName' => $matches[1],
-			'dataSet'  => $matches[2] ?? 0,
+			'dataSet'  => $dataSet ?? 0,
 			'result'   => $result,
-			'message'  => $message,
+			'message'  => (null !== $message)
+				? sprintf(
+					'%s%s',
+					(null !== $dataSet) ? "{$dataSet}: " : '',
+					$message
+				)
+				: null,
 		];
 	}
 
