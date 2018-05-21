@@ -129,7 +129,7 @@ If you're not using PSR-4 autoloading, also add the class' file path to the `<li
 
 ---
 
-Report created at 2018-05-21 22:23:12 (Europe/Berlin)
+Report created at 2018-05-21 22:23:12 (UTC)
 
 ---
 ---
