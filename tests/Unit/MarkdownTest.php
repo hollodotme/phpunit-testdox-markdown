@@ -13,8 +13,10 @@ use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\TestSuite;
 use PHPUnit\Framework\Warning;
 use PHPUnit\Runner\BaseTestRunner;
+use function file_get_contents;
 use function getcwd;
 use function ob_end_clean;
+use function ob_get_clean;
 use function ob_start;
 use function unlink;
 use const DIRECTORY_SEPARATOR;
@@ -45,6 +47,7 @@ final class MarkdownTest extends TestCase
 		);
 		$this->testSuite = $this->getTestSuite( 'Unit-Test-Suite' );
 
+		$this->markdown->startTestSuite( $this->getTestSuite( '' ) );
 		$this->markdown->startTestSuite( $this->testSuite );
 	}
 
@@ -62,14 +65,21 @@ final class MarkdownTest extends TestCase
 	 */
 	protected function tearDown() : void
 	{
-		$this->markdown->endTestSuite( $this->testSuite );
+		if ( null !== $this->markdown )
+		{
+			$this->markdown->endTestSuite( $this->getTestSuite( '' ) );
+			$this->markdown->endTestSuite( $this->getTestSuite( 'UnitTest::testSomething' ) );
+			$this->markdown->endTestSuite( $this->getTestSuite( 'hollodotme\\PHPUnit\\UnitTest::testSomething' ) );
+			$this->markdown->endTestSuite( $this->testSuite );
 
-		unlink( $this->filePath );
-		ob_start();
-		$this->markdown = null;
-		ob_end_clean();
+			ob_start();
+			$this->markdown = null;
+			ob_end_clean();
+		}
+
 		$this->testSuite = null;
-		$this->filePath  = null;
+		unlink( $this->filePath );
+		$this->filePath = null;
 	}
 
 	/**
@@ -148,11 +158,6 @@ final class MarkdownTest extends TestCase
 
 		/** @var Test $test */
 		return $test;
-	}
-
-	public function testStartTestSuite() : void
-	{
-		$this->markTestIncomplete( 'Needs implementation.' );
 	}
 
 	/**
@@ -275,16 +280,6 @@ final class MarkdownTest extends TestCase
 		);
 	}
 
-	public function testEndTestSuite() : void
-	{
-		$this->markTestIncomplete( 'Needs implementation.' );
-	}
-
-	public function testEndTest() : void
-	{
-		$this->markTestIncomplete( 'Needs implementation.' );
-	}
-
 	/**
 	 * @throws RuntimeException
 	 * @throws \PHPUnit\Framework\ExpectationFailedException
@@ -405,11 +400,6 @@ final class MarkdownTest extends TestCase
 		);
 	}
 
-	public function testStartTest() : void
-	{
-		$this->markTestIncomplete( 'Needs implementation.' );
-	}
-
 	/**
 	 * @throws RuntimeException
 	 * @throws \PHPUnit\Framework\ExpectationFailedException
@@ -470,9 +460,25 @@ final class MarkdownTest extends TestCase
 		);
 	}
 
-	public function test__destruct() : void
+	/**
+	 * @throws \PHPUnit\Framework\ExpectationFailedException
+	 * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+	 */
+	public function testDestruct() : void
 	{
-		$this->markTestIncomplete( 'Needs implementation.' );
+		ob_start();
+		$this->markdown = null;
+		$content        = ob_get_clean();
+
+		$this->assertSame(
+			"Test results written to markdown file:\n{$this->filePath}\n",
+			$content
+		);
+
+		$this->assertRegExp(
+			'#\nReport created at \d{4}-\d{2}-\d{2} \d{2}\:\d{2}\:\d{2} \(.+\)$#',
+			file_get_contents( $this->filePath )
+		);
 	}
 
 	/**
@@ -537,6 +543,122 @@ final class MarkdownTest extends TestCase
 
 		$this->assertFileEquals(
 			__DIR__ . '/Output/_files/PassingTestWithDataSets.md',
+			$this->filePath
+		);
+	}
+
+	/**
+	 * @throws RuntimeException
+	 * @throws \PHPUnit\Framework\ExpectationFailedException
+	 * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+	 */
+	public function testCanAddMultipleTests() : void
+	{
+		$testTestSuite = $this->getTestSuite( 'hollodotme\\PHPUnit\\UnitTest' );
+
+		$passingTest  = $this->getTest( 'testCanHaveSingleTest', BaseTestRunner::STATUS_PASSED );
+		$passingTest0 = $this->getTest( 'testCanHaveTestWithDataSets', BaseTestRunner::STATUS_PASSED, 0 );
+		$passingTest1 = $this->getTest( 'testCanHaveTestWithDataSets', BaseTestRunner::STATUS_PASSED, 1 );
+		$passingTest2 = $this->getTest( 'testCanHaveTestWithDataSets', BaseTestRunner::STATUS_PASSED, 2 );
+
+		$riskyTest0 = $this->getTest( 'testCanHaveTestWithDataSets', BaseTestRunner::STATUS_RISKY, 3 );
+		$riskyTest1 = $this->getTest( 'testCanHaveTestWithDataSets', BaseTestRunner::STATUS_RISKY, 4 );
+		$riskyTest2 = $this->getTest( 'testCanHaveTestWithDataSets', BaseTestRunner::STATUS_RISKY, 5 );
+
+		$skippedTest0 = $this->getTest( 'testCanHaveTestWithDataSets', BaseTestRunner::STATUS_SKIPPED, 6 );
+		$skippedTest1 = $this->getTest( 'testCanHaveTestWithDataSets', BaseTestRunner::STATUS_SKIPPED, 7 );
+		$skippedTest2 = $this->getTest( 'testCanHaveTestWithDataSets', BaseTestRunner::STATUS_SKIPPED, 8 );
+
+		$incompleteTest0 = $this->getTest( 'testCanHaveTestWithDataSets', BaseTestRunner::STATUS_INCOMPLETE, 9 );
+		$incompleteTest1 = $this->getTest( 'testCanHaveTestWithDataSets', BaseTestRunner::STATUS_INCOMPLETE, 10 );
+		$incompleteTest2 = $this->getTest( 'testCanHaveTestWithDataSets', BaseTestRunner::STATUS_INCOMPLETE, 11 );
+
+		$warningTest0 = $this->getTest( 'testCanHaveTestWithDataSets', BaseTestRunner::STATUS_WARNING, 12 );
+		$warningTest1 = $this->getTest( 'testCanHaveTestWithDataSets', BaseTestRunner::STATUS_WARNING, 13 );
+		$warningTest2 = $this->getTest( 'testCanHaveTestWithDataSets', BaseTestRunner::STATUS_WARNING, 14 );
+
+		$failureTest0 = $this->getTest( 'testCanHaveTestWithDataSets', BaseTestRunner::STATUS_FAILURE, 15 );
+		$errorTest0   = $this->getTest( 'testCanHaveTestWithDataSets', BaseTestRunner::STATUS_ERROR, 16 );
+		$errorTest1   = $this->getTest( 'testCanHaveTestWithDataSets', BaseTestRunner::STATUS_ERROR, 17 );
+
+		$this->markdown->startTestSuite( $testTestSuite );
+
+		$this->markdown->startTest( $passingTest );
+		$this->markdown->endTest( $passingTest, time() );
+
+		$this->markdown->startTest( $passingTest0 );
+		$this->markdown->endTest( $passingTest0, time() );
+
+		$this->markdown->startTest( $passingTest1 );
+		$this->markdown->endTest( $passingTest1, time() );
+
+		$this->markdown->startTest( $passingTest2 );
+		$this->markdown->endTest( $passingTest2, time() );
+
+		$this->markdown->startTest( $riskyTest0 );
+		$this->markdown->addRiskyTest( $riskyTest0, new Exception( 'DataSet is risky.' ), time() );
+		$this->markdown->endTest( $riskyTest0, time() );
+
+		$this->markdown->startTest( $riskyTest1 );
+		$this->markdown->addRiskyTest( $riskyTest1, new Exception( 'DataSet is risky.' ), time() );
+		$this->markdown->endTest( $riskyTest1, time() );
+
+		$this->markdown->startTest( $riskyTest2 );
+		$this->markdown->addRiskyTest( $riskyTest2, new Exception( 'DataSet is risky.' ), time() );
+		$this->markdown->endTest( $riskyTest2, time() );
+
+		$this->markdown->startTest( $skippedTest0 );
+		$this->markdown->addSkippedTest( $skippedTest0, new Exception( 'DataSet was skipped.' ), time() );
+		$this->markdown->endTest( $skippedTest0, time() );
+
+		$this->markdown->startTest( $skippedTest1 );
+		$this->markdown->addSkippedTest( $skippedTest1, new Exception( 'DataSet was skipped.' ), time() );
+		$this->markdown->endTest( $skippedTest1, time() );
+
+		$this->markdown->startTest( $skippedTest2 );
+		$this->markdown->addSkippedTest( $skippedTest2, new Exception( 'DataSet was skipped.' ), time() );
+		$this->markdown->endTest( $skippedTest2, time() );
+
+		$this->markdown->startTest( $incompleteTest0 );
+		$this->markdown->addIncompleteTest( $incompleteTest0, new Exception( 'DataSet is incomplete.' ), time() );
+		$this->markdown->endTest( $incompleteTest0, time() );
+
+		$this->markdown->startTest( $incompleteTest1 );
+		$this->markdown->addIncompleteTest( $incompleteTest1, new Exception( 'DataSet is incomplete.' ), time() );
+		$this->markdown->endTest( $incompleteTest1, time() );
+
+		$this->markdown->startTest( $incompleteTest2 );
+		$this->markdown->addIncompleteTest( $incompleteTest2, new Exception( 'DataSet is incomplete.' ), time() );
+		$this->markdown->endTest( $incompleteTest2, time() );
+
+		$this->markdown->startTest( $warningTest0 );
+		$this->markdown->addWarning( $warningTest0, new Warning( 'DataSet creates warning.' ), time() );
+		$this->markdown->endTest( $warningTest0, time() );
+
+		$this->markdown->startTest( $warningTest1 );
+		$this->markdown->addWarning( $warningTest1, new Warning( 'DataSet creates warning.' ), time() );
+		$this->markdown->endTest( $warningTest1, time() );
+
+		$this->markdown->startTest( $warningTest2 );
+		$this->markdown->addWarning( $warningTest2, new Warning( 'DataSet creates warning.' ), time() );
+		$this->markdown->endTest( $warningTest2, time() );
+
+		$this->markdown->startTest( $failureTest0 );
+		$this->markdown->addFailure( $failureTest0, new AssertionFailedError( 'DataSet fails.' ), time() );
+		$this->markdown->endTest( $failureTest0, time() );
+
+		$this->markdown->startTest( $errorTest0 );
+		$this->markdown->addError( $errorTest0, new Error( 'DataSet errors out.' ), time() );
+		$this->markdown->endTest( $errorTest0, time() );
+
+		$this->markdown->startTest( $errorTest1 );
+		$this->markdown->addError( $errorTest1, new Error( 'DataSet errors out.' ), time() );
+		$this->markdown->endTest( $errorTest1, time() );
+
+		$this->markdown->endTestSuite( $testTestSuite );
+
+		$this->assertFileEquals(
+			__DIR__ . '/Output/_files/MultipleTests.md',
 			$this->filePath
 		);
 	}
