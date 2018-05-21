@@ -111,10 +111,10 @@ final class MarkdownFile implements WritesMarkdownFile
 		$indent = str_repeat( ' ', $indentLevel * 2 );
 
 		$this->write(
-			"%s%s %s\n\n",
+			"%s%s %s  \n\n",
 			$indent,
 			$lineChar,
-			implode( "\n{$indent}{$lineChar} ", $elements )
+			implode( "  \n{$indent}{$lineChar} ", $elements )
 		);
 	}
 
