@@ -1,9 +1,13 @@
-[![Build Status](https://travis-ci.org/hollodotme/phpunit-testdox-markdown.svg?branch=master)](https://travis-ci.org/hollodotme/phpunit-testdox-markdown)
-[![Latest Stable Version](https://poser.pugx.org/hollodotme/phpunit-testdox-markdown/v/stable)](https://packagist.org/packages/hollodotme/phpunit-testdox-markdown) 
-[![Total Downloads](https://poser.pugx.org/hollodotme/phpunit-testdox-markdown/downloads)](https://packagist.org/packages/hollodotme/phpunit-testdox-markdown) 
-[![Coverage Status](https://coveralls.io/repos/github/hollodotme/phpunit-testdox-markdown/badge.svg?branch=master)](https://coveralls.io/github/hollodotme/phpunit-testdox-markdown?branch=master)
+[![Latest Stable Version](https://poser.pugx.org/hollodotme/phpunit-testdox-markdown/v/stable)](https://packagist.org/packages/hollodotme/phpunit-testdox-markdown)
+[![Total Downloads](https://poser.pugx.org/hollodotme/phpunit-testdox-markdown/downloads)](https://packagist.org/packages/hollodotme/phpunit-testdox-markdown)
 
 # PHPUnit\TestListeners\TestDox
+
+## END OF LIFE
+
+**Please note:** This project won't receive updates or fixes anymore and was marked as "abandoned" at packagist.org.
+
+However, if you find this code useful in any way, feel free to fork, change and re-publish it. The MIT license applies.
 
 ## Description
 
@@ -12,7 +16,7 @@ A PHPUnit test listener that creates a testdox markdown file with grouped datase
 ## Requirements
 
 * PHP >= 7.1
-* PHPUnit >= 7.0 
+* PHPUnit >= 7.0
 
 ## Installation
 
