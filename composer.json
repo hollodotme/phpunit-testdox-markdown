@@ -10,6 +10,7 @@
       "email": "hw@hollo.me"
     }
   ],
+  "abandoned": true,
   "require": {
     "php": ">=7.1"
   },
