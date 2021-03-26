@@ -1,5 +1,4 @@
 /.idea/
-/.vagrant/
 /vendor/
 /build/logs/
 /composer.lock
